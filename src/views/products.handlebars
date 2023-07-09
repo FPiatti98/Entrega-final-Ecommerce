@@ -9,6 +9,7 @@
     
     {{#eq user.role "admin"}}
         <button id="createProduct" onclick="createProd()">Crear Producto</button>
+        <button id="getUsers" onclick="getUsers()">Administrar Usuarios</button>
     {{else}}
         <button id="goToCart" onclick="goToCart('{{user.cart}}')">Carrito</button>
     {{/eq}}

@@ -21,8 +21,9 @@ import cartViewsRouter from './routes/viewsRouters/cart.views.routes.js'
 import productsViewsRouter from './routes/viewsRouters/products.views.routes.js'
 import UserViewsRouter from './routes/viewsRouters/user.views.routes.js'
 import sessionsRouter from './routes/session.routes.js'
-import mockRouter from '../src/mock/mock.router.js'
 import loggerRouter from '../src/routes/loggerTest.routes.js'
+import userRouter from './routes/users.routes.js'
+//import mockRouter from '../src/mock/mock.router.js'
 //import productsRouter from '../src/service/fylesystem/routes/productsRoutes.js'
 //import cartsRouter from '../src/service/fylesystem/routes/cartRoutes.js';
 //import githubLoginRouter from './routes/githublogin.routes.js'
@@ -91,8 +92,9 @@ app.use('/mongodb/api/', cartsRouterMongo);
 app.use('/', cartViewsRouter);
 app.use('/', productsViewsRouter);
 app.use("/users", UserViewsRouter);
+app.use('/api/users', userRouter);
 app.use("/api/sessions", sessionsRouter);
-app.use("/mockingproducts", mockRouter);
+//app.use("/mockingproducts", mockRouter);
 app.use('/loggerTest', loggerRouter);
 app.use('/apidocs', swaggerUIExpress.serve, swaggerUIExpress.setup(specs));
 

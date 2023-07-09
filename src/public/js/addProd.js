@@ -63,3 +63,7 @@ const deleteProd = (id) => {
 const updateProd = (id) => {
   window.location.replace(`products/updateproduct/${id}`)
 }
+
+const getUsers = () => {
+  window.location.replace(`/users`)
+}
