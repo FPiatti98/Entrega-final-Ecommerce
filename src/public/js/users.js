@@ -28,3 +28,20 @@ const updateUser = (email) => {
     }
   });
 }
+
+const deleteManyUsers = () => {
+  fetch(`http://localhost:8080/api/users/deletemany`, {
+    method: 'GET',
+    mode: "cors",
+  })
+  .then(result => {
+    if(result.status==200){
+      alert("usuarios inactivos eliminados exitosamente");
+      location.reload();
+    } else if (result.status == 404){
+      alert("No hay usuarios inactivos en este momento");
+    }else if (result.status == 500){
+      alert(`error interno del servidor`);
+    }
+  });
+}

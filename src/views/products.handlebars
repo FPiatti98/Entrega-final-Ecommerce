@@ -19,15 +19,12 @@
 {{#if products.isValid}}
 <div>
     {{#each products.docs}}
-        <h4>Producto: {{this._id}}</h4>
+        <h4>Producto: {{this.title}}</h4>
         <ul>
-            <li>Titulo: {{this.title}}</li>
             <li>Descripcion: {{this.description}}</li>
             <li>Precio: {{this.price}}</li>
             <li>Imagen: {{this.thumbnail}}</li>
-            <li>Codigo: {{this.code}}</li>
             <li>Stock: {{this.stock}}</li>
-            <li>Estado: {{this.status}}</li>
             <li>Categoria: {{this.category}}</li>
         </ul>
         {{#eq ../user.role "admin"}}

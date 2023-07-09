@@ -19,7 +19,11 @@ const userSchema = new mongoose.Schema({
     role:{
         type: String,
         default: "user"
-    }
+    },
+    lastLogin: {
+        type: Date,
+        default: null,
+      }
 })
 
 userSchema.plugin(mongoosePaginate);

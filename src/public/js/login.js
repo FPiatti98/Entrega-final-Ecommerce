@@ -14,9 +14,10 @@ form.addEventListener('submit', e=> {
     }).then(result => {
         if(result.status===200){
             window.location.replace('/products')
-        } else if (result.status === 401){
-            console.log(result);
-            alert("Login invalido revisa tus credenciales!");
+        } else if(result.status === 404){
+            alert("El usuario es inexistente")
+        } else if(result.status === 401){
+            alert("El usuario y la contraseña no coinciden")
         }
     })
 })

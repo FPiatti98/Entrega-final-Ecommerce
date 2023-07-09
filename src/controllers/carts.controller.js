@@ -3,6 +3,7 @@ import { mongo } from "mongoose";
 import Cartsrepository from "../service/repositories/carts.repository.js";
 import Productsrepository from "../service/repositories/products.repository.js";
 import Ticketrepository from "../service/repositories/tickets.repository.js";
+import nodemailer from 'nodemailer'
 
 const prodController = new Productsrepository;
 
@@ -150,6 +151,10 @@ export const generatePurchase = async(req, res) => {
         const productsPurchased = [];
         const productsRetained = [];
         let totalPurchasePrice = 0;
+
+        if(cart.products.length == 0){
+            return res.status(404).send({status: "error", message : "El carrito esta vacio"});
+        }
         
         for (let i = 0; i < cart.products.length; i++){
             const productInDB = await prodController.getById(cart.products[i]._id)
@@ -215,6 +220,35 @@ export const generatePurchase = async(req, res) => {
         const newTicket = await ticketController.create(ticket);
 
         req.logger.info("ticket creado correctamente")
+
+        //envio de mail
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            port: 587,
+            auth: {
+              user: '61k4r16@gmail.com',
+              pass: 'mbfucnhibzjxniik',
+            },
+        });
+
+        const mailOptions = {
+            from: '61k4r16@gmail.com',
+            to: user.email, 
+            subject: 'Gracias por su compra!',
+            html: 
+            `
+            <div>Gracias por su compra</div>
+            <div>
+            <p>codigo del ticket de compra: ${newTicket.code}</p>
+            <p>Subtotal: ${newTicket.amount}</p>
+            <p>Realizar la transferencia bancaria a este CBU: eccomerce.backend.proyect.00443355</p>
+            <p>Saludos Cordiales.</p>
+            </div>
+            `,
+        };
+        
+        await transporter.sendMail(mailOptions);
+
         return res.status(200).send({status: "success", message : "Se ha generado el ticket exitosamente", ticket: newTicket});
 
     } catch (error) {

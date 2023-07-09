@@ -50,12 +50,33 @@ const initializePassport = () => {
     ))
 
     passport.use('login', new localStrategy(
+        { passReqToCallback: true, usernameField: "email" },
+        async (req, username, password, done) => {
+          try {
+            const user = await userModel.findOne({ email: username });
+            if (!user) {
+              console.warn("El usuario con el username: " + username + " es inexistente");
+              return done(null, false, { message: 'Usuario inexistente' });
+            }
+            if (!isValidPassword(user, password)) {
+              console.warn("Credenciales invalidas para el usuario " + username);
+              return done(null, false, { message: 'Credenciales inválidas' });
+            }
+            return done(null, user);
+          } catch (error) {
+            return done(error);
+          }
+        }
+      ));
+
+    /*
+    passport.use('login', new localStrategy(
         {passReqToCallback: true, usernameField: "email"}, async(req, username, password, done) => {
             try {
                 const user = await userModel.findOne({email: username});
                 if(!user){
                     console.warn("El usuario con el username : " + username + " es inexistente");
-                    return done(null, false);
+                    return done(null,false);
                 }
                 if(!isValidPassword(user, password)){
                     console.warn("Credenciales invalidas para el usuario " + username)
@@ -67,39 +88,7 @@ const initializePassport = () => {
             }
         }
     ));
-
-    passport.use('github', new GitHubStrategy(
-        {
-            clientID: 'Iv1.91c10217956b3564', 
-            clientSecret: 'c6dd8a97714da15584b80c143d6272bcd604883b',
-            callbackUrl: 'http://localhost:8080/api/sessions/githubcallback' 
-        },
-        async(accessToken, refreshToken, profile, done) => {
-            console.log("Profile obtenido del usuario: ");
-            console.log(profile);
-            try {
-                const user = await userModel.findOne({email: profile._json.email});
-                console.log("Usuario encontrado para login: ");
-                console.log(user);
-                if(!user){
-                    console.warn(`El usuario con el username ${profile._json.email} es inexistente`);
-                    let newUser = {
-                        first_name: profile._json.name,
-                        last_name: '',
-                        age: 18,
-                        email: profile._json.email,
-                        passport: '',
-                    };
-                    const result = await userModel.create(newUser);
-                    return done(null, result);
-                } else {
-                    return done(null, user);
-                }
-            } catch (error) {
-                return done(error);
-            }
-        }
-    ));
+    */
 
     passport.serializeUser((user, done) => {
         done(null, user._id);

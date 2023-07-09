@@ -73,16 +73,53 @@ router.post("/register", passport.authenticate(
         console.log("registrando nuevo usuario");
         req.logger.info("Usuario creado con exito")
         res.status(201).send({status: "success", message: "Usuario creado con exito"});
-    });
-    
-router.post("/login", passport.authenticate('login', {failureRedirect: '/api/sessions/fail-login'}), async(req, res) => {
+});
+
+router.post("/login", (req, res, next) => {
+    passport.authenticate('login', async(err, user, info) => {
+      if (err) {
+        // Handle internal server error
+        return res.status(500).json({ error: err.message });
+      }
+      if (!user) {
+        if (info.message === 'Usuario inexistente') {
+          // Handle inexistent user
+          return res.status(404).json({ status: "error", error: "El usuario es inexistente" });
+        } else if (info.message === 'Credenciales inválidas') {
+          // Handle incorrect password
+          return res.status(401).json({ status: "error", error: "El usuario y la contraseña no coinciden" });
+        }
+      }
+      // Authentication successful, proceed with desired action
+      req.logIn(user, async(err) => {
+        if (err) {
+          // Handle error during session creation
+          return res.status(500).json({ error: "Error al iniciar sesión" });
+        }
+        req.user.lastLogin = new Date(); // Update lastLogin field to current date and time
+        await req.user.save(); // Save the updated user
+        req.session.user = new UserDTO(user);
+        return res.status(200).json({ status: "success", payload: req.session.user, message: "Usuario logueado con éxito" });
+      });
+    })(req, res, next);
+  });
+
+
+/*
+router.post("/login", passport.authenticate('login', (info), {failureRedirect: '/api/sessions/fail-login'}), async(req, res) => {
     console.log("User found to login");
     const user = req.user;
     req.logger.info(user);
-    if(!user) return res.status(401).send({status: "error", error: "El usuario y la contraseña no coinciden "});
+    if(info.message === 'Usuario inexistente'){
+        return res.status(404).send({status: "error", error: "El usuario es inexistente"});
+    } else if(info.message === 'Credenciales inválidas') {
+        return res.status(401).send({status: "error", error: "El usuario y la contraseña no coinciden "});
+    }
     req.session.user = new UserDTO(user);
     res.send({status: "success", payload: req.session.user, message: "Usuario logueado con exito"});
 });
+*/
+
     
 router.get("/fail-register", (req, res) => {
     res.status(401).send({error: "el register no se pudo procesar"});
