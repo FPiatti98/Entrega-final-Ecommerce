@@ -5,6 +5,9 @@ form.addEventListener('submit', e=> {
     const data = new FormData(form);
     const reqBody = {}
     data.forEach((value, key)=>reqBody[key]=value);
+    if (reqBody.email === '' || reqBody.password === ''){
+        return alert('Por favor completar los datos correctamente')
+    }
     fetch('/api/sessions/login', {
         method: "POST",
         body: JSON.stringify(reqBody),

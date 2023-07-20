@@ -1,10 +1,10 @@
 import passport from 'passport';
 import passportLocal from 'passport-local';
-import GitHubStrategy from 'passport-github2';
 import { userModel } from '../service/db/models/user.model.js'
 import { createHash, isValidPassword } from '../util.js'
 import { getNewCartId } from '../service/cart.service.js';
 
+//checkAuth se encarga de checkear si la sesion del usuario sigue activa o ya se vencio
 export const checkAuth = (req, res, next) => {
     if(req.isAuthenticated()){
         return next()
@@ -12,6 +12,7 @@ export const checkAuth = (req, res, next) => {
     res.redirect('/users/login')
 }
 
+//checkAdmin se encarga de checkear si el usuario tiene el rol de administrador para poder acceder a ciertas peticiones
 export const checkAdmin = (req, res, next) => {
     if(req.user.role === "admin") {
         return next()
@@ -20,6 +21,7 @@ export const checkAdmin = (req, res, next) => {
     res.redirect('/users/login')
 }
 
+//Estrategias de register y login en passport
 const localStrategy = passportLocal.Strategy;
 
 const initializePassport = () => {
@@ -29,10 +31,9 @@ const initializePassport = () => {
             try {
                 const exist = await userModel.findOne({email});
                 if(exist){
-                    console.log("El usuario ya existe");
-                    return done("El usuario ya existe", false);
+                    console.warn("El usuario con el username: " + username + " ya existe");
+                    return done(null, false, { message: 'Usuario ya existe' });
                 }
-
                 const user = {
                     first_name,
                     last_name,

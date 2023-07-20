@@ -21,9 +21,11 @@
     {{#each products.docs}}
         <h4>Producto: {{this.title}}</h4>
         <ul>
+            <img src={{this.thumbnail}} width="200" height="200">
+        </ul>
+        <ul>
             <li>Descripcion: {{this.description}}</li>
             <li>Precio: {{this.price}}</li>
-            <li>Imagen: {{this.thumbnail}}</li>
             <li>Stock: {{this.stock}}</li>
             <li>Categoria: {{this.category}}</li>
         </ul>
